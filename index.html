@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WhatsApp Auto Sender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      background: linear-gradient(to bottom, #25D366, #128C7E);
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+      color: white;
+      text-align: center;
+    }
+    h1 {
+      margin-bottom: 10px;
+    }
+    form {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      color: black;
+      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    input, textarea {
+      width: 100%;
+      margin-top: 10px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      font-size: 16px;
+    }
+    input[type="file"] {
+      background: #f0f0f0;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+      color: #333;
+    }
+    button {
+      margin-top: 15px;
+      background-color: #25D366;
+      color: white;
+      padding: 12px 24px;
+      border: none;
+      font-size: 18px;
+      border-radius: 12px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #1da851;
+    }
+  </style>
+</head>
+<body>
+  <h1>📤 WhatsApp Auto Sender</h1>
+  <form action="/send" method="POST" enctype="multipart/form-data">
+    <input type="text" name="number" placeholder="Enter Number (with country code)" required>
+
+    <textarea name="message" placeholder="Single message (optional)..."></textarea>
+
+    <label>Upload .txt Message File</label>
+    <input type="file" name="messageFile" accept=".txt">
+
+    <label>Media File (image/video/pdf)</label>
+    <input type="file" name="file" accept="image/*,video/*,application/pdf">
+
+    <label>Delay between messages (sec)</label>
+    <input type="number" name="delay" min="1" value="5" required>
+
+    <label><input type="checkbox" name="repeat"> 🔁 Repeat messages forever</label>
+
+    <button type="submit">Send</button>
+  </form>
+</body>
+</html>
