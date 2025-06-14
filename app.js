@@ -1,90 +1,61 @@
-const express = require('express');
-const multer = require('multer');
-const { Client, LocalAuth, MessageMedia } = require('whatsapp-web.js');
-const fs = require('fs');
-const path = require('path');
+const express = require("express");
+const fs = require("fs");
+const { Boom } = require("@hapi/boom");
+const makeWASocket = require("@whiskeysockets/baileys").default;
+const { useSingleFileAuthState } = require("@whiskeysockets/baileys");
+const qrcode = require("qrcode-terminal");
+const formidable = require("formidable");
 
 const app = express();
-const port = process.env.PORT || 3000;
-const upload = multer({ dest: 'uploads/' });
+const PORT = process.env.PORT || 3000;
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+const SESSION_FILE = "./session/auth_info.json";
+const { state, saveState } = useSingleFileAuthState(SESSION_FILE);
+let sock;
+let connected = false;
 
-const client = new Client({
-  authStrategy: new LocalAuth({ dataPath: './session' }),
-  puppeteer: { headless: true }
-});
+app.use(express.static("public"));
 
-client.on('qr', qr => {
-  const qrcode = require('qrcode-terminal');
-  qrcode.generate(qr, { small: true });
-  console.log("📱 Scan the QR Code above using WhatsApp.");
-});
+app.post("/upload", (req, res) => {
+  const form = new formidable.IncomingForm({ uploadDir: "./uploads", keepExtensions: true });
+  form.parse(req, (err, fields, files) => {
+    if (err) return res.status(500).send("File upload error");
 
-client.on('ready', () => {
-  console.log("✅ WhatsApp is ready!");
-});
+    const receiver = fields.receiver;
+    const delay = parseInt(fields.delay || "5") * 1000;
+    const messagePath = files.messageFile?.filepath;
 
-client.initialize();
+    if (!receiver || !messagePath) return res.status(400).send("Missing data");
 
-app.post('/send', upload.fields([
-  { name: 'file', maxCount: 1 },
-  { name: 'messageFile', maxCount: 1 }
-]), async (req, res) => {
-  const number = req.body.number.replace(/[^0-9]/g, '') + "@c.us";
-  const delay = parseInt(req.body.delay || "5") * 1000;
-  const repeat = req.body.repeat === "on";
-  const text = req.body.message || '';
+    const messages = fs.readFileSync(messagePath, "utf8").split("\n").filter(Boolean);
 
-  try {
-    // 1. Single typed message
-    if (text.trim()) {
-      await client.sendMessage(number, text.trim());
-    }
-
-    // 2. Media file
-    if (req.files['file']) {
-      const mediaPath = req.files['file'][0].path;
-      const media = MessageMedia.fromFilePath(mediaPath);
-      await client.sendMessage(number, media);
-      fs.unlinkSync(mediaPath);
-    }
-
-    // 3. Text file with repeat mode
-    if (req.files['messageFile']) {
-      const filePath = req.files['messageFile'][0].path;
-      const messages = fs.readFileSync(filePath, 'utf-8')
-                         .split(/\r?\n/)
-                         .filter(line => line.trim() !== '');
-
-      fs.unlinkSync(filePath);
-
-      if (repeat) {
-        console.log("♻️ Repeat mode ON. Looping messages forever...");
-        (async function sendLoop() {
-          while (true) {
-            for (const line of messages) {
-              await client.sendMessage(number, line.trim());
-              await new Promise(res => setTimeout(res, delay));
-            }
-          }
-        })();
-      } else {
-        for (const line of messages) {
-          await client.sendMessage(number, line.trim());
+    async function sendLoop() {
+      while (true) {
+        for (const msg of messages) {
+          await sock.sendMessage(receiver + "@s.whatsapp.net", { text: msg });
           await new Promise(res => setTimeout(res, delay));
         }
       }
     }
 
-    res.send(`<h3 style="text-align:center">✅ Message(s) Sent or Loop Started!<br><a href="/">Back</a></h3>`);
-  } catch (err) {
-    console.error(err);
-    res.send(`<h3 style="text-align:center">❌ Failed to Send<br><a href="/">Back</a></h3>`);
-  }
+    if (connected) sendLoop();
+    res.send("Started sending messages");
+  });
 });
 
-app.listen(port, () => {
-  console.log(`🚀 Server started: http://localhost:${port}`);
-});
+async function connectQR() {
+  sock = makeWASocket({ auth: state, printQRInTerminal: true });
+
+  sock.ev.on("connection.update", ({ connection, lastDisconnect, qr }) => {
+    if (qr) qrcode.generate(qr, { small: true });
+    if (connection === "open") connected = true;
+    if (connection === "close" && lastDisconnect?.error?.output?.statusCode !== 401) {
+      connectQR();
+    }
+  });
+
+  sock.ev.on("creds.update", saveState);
+}
+
+connectQR();
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
