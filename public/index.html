@@ -1,90 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>WhatsApp Auto Sender</title>
-  <style>
-    body {
-      margin: 0;
-      padding: 0;
-      font-family: sans-serif;
-      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 100vh;
-    }
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WhatsApp Auto Sender</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
 
-    h1 {
-      font-size: 2em;
-      margin-bottom: 0.5em;
-      text-align: center;
-    }
+    h1 {
+      margin-bottom: 1rem;
+    }
 
-    form {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 20px;
-      border-radius: 15px;
-      width: 90%;
-      max-width: 400px;
-      display: flex;
-      flex-direction: column;
-      gap: 15px;
-    }
+    form {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+    }
 
-    input, select {
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-size: 1em;
-      outline: none;
-    }
+    label {
+      display: block;
+      margin: 12px 0 4px;
+    }
 
-    button {
-      padding: 15px;
-      font-size: 1.1em;
-      border: none;
-      border-radius: 10px;
-      background-color: #00c853;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 8px;
+    }
 
-    button:active {
-      background-color: #009624;
-    }
+    button {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      background-color: #00c851;
+      color: white;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
 
-    audio {
-      display: none;
-    }
-  </style>
+    button:hover {
+      background-color: #007e33;
+    }
+
+    footer {
+      margin-top: 20px;
+      font-size: 12px;
+      color: #ccc;
+    }
+  </style>
 </head>
 <body>
+  <h1>📤 WhatsApp Auto Sender</h1>
+  <form action="/upload" method="post" enctype="multipart/form-data">
+    <label for="receiver">📱 WhatsApp Number (with country code)</label>
+    <input type="text" name="receiver" id="receiver" placeholder="e.g., 919876543210" required />
 
-  <h1> WhatsApp Auto Sender</h1>
+    <label for="delay">⏱ Delay (seconds)</label>
+    <input type="number" name="delay" id="delay" value="5" min="1" required />
 
-  <form action="/upload" method="POST" enctype="multipart/form-data" id="sendForm">
-    <input type="text" name="receiver" placeholder="Receiver WhatsApp Number (with country code)" required />
-    <input type="file" name="messageFile" accept=".txt" required />
-    <input type="number" name="delay" placeholder="Delay (in seconds)" min="1" value="5" required />
-    <button type="submit" id="sendBtn"> Start Sending</button>
-  </form>
+    <label for="messageFile">📁 Upload Text File</label>
+    <input type="file" name="messageFile" id="messageFile" accept=".txt" required />
 
-  <audio id="clickSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
+    <button type="submit" onclick="playSound()">🚀 Start Sending</button>
+  </form>
 
-  <script>
-    const btn = document.getElementById('sendBtn');
-    const sound = document.getElementById('clickSound');
+  <footer>Made with ❤️ for automation</footer>
 
-    btn.addEventListener('click', () => {
-      sound.play();
-    });
-  </script>
+  <!-- Touch Sound -->
+  <audio id="touchSound" src="https://www.fesliyanstudios.com/play-mp3/4381" preload="auto"></audio>
 
+  <script>
+    function playSound() {
+      document.getElementById('touchSound').play();
+    }
+  </script>
 </body>
 </html>
