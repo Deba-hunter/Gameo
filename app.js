@@ -7,16 +7,17 @@ const { makeWASocket, useSingleFileAuthState } = require('@whiskeysockets/bailey
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ✅ Create session folder if not exists
+// ✅ Only ensure session folder exists (Baileys will create creds.json)
 const SESSION_FOLDER = path.join(__dirname, 'session');
 const SESSION_FILE = path.join(SESSION_FOLDER, 'creds.json');
+
 if (!fs.existsSync(SESSION_FOLDER)) {
   fs.mkdirSync(SESSION_FOLDER);
   console.log("✅ Created 'session' folder");
 }
 
 // ✅ WhatsApp Auth Setup
-const { state, saveCreds } = useSingleFileAuthState(SESSION_FILE);
+const { state, saveState } = useSingleFileAuthState(SESSION_FILE);
 
 async function startSocket() {
   const sock = makeWASocket({
@@ -24,21 +25,21 @@ async function startSocket() {
     printQRInTerminal: true,
   });
 
-  sock.ev.on('creds.update', saveCreds);
+  sock.ev.on('creds.update', saveState);
   return sock;
 }
 
-// ✅ Serve HTML and parse form
+// ✅ HTML static files
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ File upload setup
+// ✅ File upload middleware
 const upload = multer({ dest: 'uploads/' });
 
 let sockInstance = null;
 startSocket().then(sock => sockInstance = sock);
 
-// ✅ Upload route
+// ✅ Upload form handler
 app.post('/upload', upload.single('messageFile'), async (req, res) => {
   const receiver = req.body.receiver?.trim();
   const delaySec = parseInt(req.body.delay) || 5;
