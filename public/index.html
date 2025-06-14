@@ -8,63 +8,55 @@
     body {
       margin: 0;
       padding: 0;
+      font-family: sans-serif;
       background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
-      font-family: 'Segoe UI', sans-serif;
       color: white;
       display: flex;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
-      height: 100vh;
+      justify-content: center;
+      min-height: 100vh;
     }
 
-    .container {
-      width: 90%;
-      max-width: 450px;
-      background: rgba(255, 255, 255, 0.1);
-      backdrop-filter: blur(15px);
-      border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
-    }
-
-    h2 {
+    h1 {
+      font-size: 2em;
+      margin-bottom: 0.5em;
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 1.8rem;
     }
 
-    label {
-      font-size: 0.9rem;
-      margin-top: 10px;
-      display: block;
+    form {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 20px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
     }
 
-    input, button {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
+    input, select {
+      padding: 12px;
       border: none;
       border-radius: 10px;
-      font-size: 1rem;
-    }
-
-    input[type="file"] {
-      background: #f0f0f0;
+      font-size: 1em;
+      outline: none;
     }
 
     button {
-      background: #00c853;
+      padding: 15px;
+      font-size: 1.1em;
+      border: none;
+      border-radius: 10px;
+      background-color: #00c853;
       color: white;
       font-weight: bold;
+      cursor: pointer;
       transition: background 0.3s ease;
     }
 
-    button:hover {
-      background: #00b349;
-    }
-
     button:active {
-      transform: scale(0.98);
+      background-color: #009624;
     }
 
     audio {
@@ -73,29 +65,26 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>ðŸ“² WhatsApp Auto Sender</h2>
-    <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="playSound()">
-      <label for="receiver">Receiver Number (with country code)</label>
-      <input type="text" name="receiver" required placeholder="e.g. 919876543210" />
 
-      <label for="messageFile">Upload Message File (.txt)</label>
-      <input type="file" name="messageFile" accept=".txt" required />
+  <h1> WhatsApp Auto Sender</h1>
 
-      <label for="delay">Delay (seconds between messages)</label>
-      <input type="number" name="delay" value="5" min="1" required />
+  <form action="/upload" method="POST" enctype="multipart/form-data" id="sendForm">
+    <input type="text" name="receiver" placeholder="Receiver WhatsApp Number (with country code)" required />
+    <input type="file" name="messageFile" accept=".txt" required />
+    <input type="number" name="delay" placeholder="Delay (in seconds)" min="1" value="5" required />
+    <button type="submit" id="sendBtn"> Start Sending</button>
+  </form>
 
-      <button type="submit">ðŸš€ Start Messaging</button>
-    </form>
-  </div>
+  <audio id="clickSound" src="https://www.soundjay.com/button/sounds/button-3.mp3" preload="auto"></audio>
 
-  <!-- Touch Sound -->
-  <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-click-melodic-tone-1129.mp3" preload="auto"></audio>
   <script>
-    function playSound() {
-      document.getElementById('clickSound').play();
-    }
+    const btn = document.getElementById('sendBtn');
+    const sound = document.getElementById('clickSound');
+
+    btn.addEventListener('click', () => {
+      sound.play();
+    });
   </script>
+
 </body>
-                                                                                                                        </html>
-                                                                                                                        
+</html>
