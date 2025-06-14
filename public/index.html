@@ -1,78 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>WhatsApp Auto Sender</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
     body {
-      background: linear-gradient(to bottom, #25D366, #128C7E);
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
       font-family: 'Segoe UI', sans-serif;
-      padding: 20px;
       color: white;
-      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
     }
-    h1 {
-      margin-bottom: 10px;
-    }
-    form {
-      background: white;
+
+    .container {
+      width: 90%;
+      max-width: 450px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
       padding: 20px;
-      border-radius: 16px;
-      color: black;
-      box-shadow: 0 0 20px rgba(0,0,0,0.2);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.5);
     }
-    input, textarea {
-      width: 100%;
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    label {
+      font-size: 0.9rem;
       margin-top: 10px;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-size: 16px;
+      display: block;
     }
+
+    input, button {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+    }
+
     input[type="file"] {
       background: #f0f0f0;
     }
-    label {
-      display: block;
-      margin-top: 10px;
-      font-weight: bold;
-      color: #333;
-    }
+
     button {
-      margin-top: 15px;
-      background-color: #25D366;
+      background: #00c853;
       color: white;
-      padding: 12px 24px;
-      border: none;
-      font-size: 18px;
-      border-radius: 12px;
-      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
     }
+
     button:hover {
-      background-color: #1da851;
+      background: #00b349;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    audio {
+      display: none;
     }
   </style>
 </head>
 <body>
-  <h1>📤 WhatsApp Auto Sender</h1>
-  <form action="/send" method="POST" enctype="multipart/form-data">
-    <input type="text" name="number" placeholder="Enter Number (with country code)" required>
+  <div class="container">
+    <h2>ðŸ“² WhatsApp Auto Sender</h2>
+    <form action="/upload" method="post" enctype="multipart/form-data" onsubmit="playSound()">
+      <label for="receiver">Receiver Number (with country code)</label>
+      <input type="text" name="receiver" required placeholder="e.g. 919876543210" />
 
-    <textarea name="message" placeholder="Single message (optional)..."></textarea>
+      <label for="messageFile">Upload Message File (.txt)</label>
+      <input type="file" name="messageFile" accept=".txt" required />
 
-    <label>Upload .txt Message File</label>
-    <input type="file" name="messageFile" accept=".txt">
+      <label for="delay">Delay (seconds between messages)</label>
+      <input type="number" name="delay" value="5" min="1" required />
 
-    <label>Media File (image/video/pdf)</label>
-    <input type="file" name="file" accept="image/*,video/*,application/pdf">
+      <button type="submit">ðŸš€ Start Messaging</button>
+    </form>
+  </div>
 
-    <label>Delay between messages (sec)</label>
-    <input type="number" name="delay" min="1" value="5" required>
-
-    <label><input type="checkbox" name="repeat"> 🔁 Repeat messages forever</label>
-
-    <button type="submit">Send</button>
-  </form>
+  <!-- Touch Sound -->
+  <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-click-melodic-tone-1129.mp3" preload="auto"></audio>
+  <script>
+    function playSound() {
+      document.getElementById('clickSound').play();
+    }
+  </script>
 </body>
-</html>
+                                                                                                                        </html>
+                                                                                                                        
